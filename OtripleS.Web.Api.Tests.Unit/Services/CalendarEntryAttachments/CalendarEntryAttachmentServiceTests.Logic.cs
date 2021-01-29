@@ -6,6 +6,7 @@
 using FluentAssertions;
 using Moq;
 using OtripleS.Web.Api.Models.CalendarEntryAttachments;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -41,6 +42,39 @@ namespace OtripleS.Web.Api.Tests.Unit.Services.CalendarEntryAttachments
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldRetrieveAllCalendarEntryAttachments()
+        {
+            // given
+            IQueryable<CalendarEntryAttachment> randomCalendarEntryAttachments =
+                CreateRandomCalendarEntryAttachments();
+
+            IQueryable<CalendarEntryAttachment> storageCalendarEntryAttachments =
+                randomCalendarEntryAttachments;
+
+            IQueryable<CalendarEntryAttachment> expectedCalendarEntryAttachments =
+                storageCalendarEntryAttachments;
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllCalendarEntryAttachments())
+                    .Returns(storageCalendarEntryAttachments);
+
+            // when
+            IQueryable<CalendarEntryAttachment> actualCalendarEntryAttachments =
+                this.calendarEntryAttachmentService.RetrieveAllCalendarEntryAttachments();
+
+            // then
+            actualCalendarEntryAttachments.Should().BeEquivalentTo(expectedCalendarEntryAttachments);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllCalendarEntryAttachments(),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

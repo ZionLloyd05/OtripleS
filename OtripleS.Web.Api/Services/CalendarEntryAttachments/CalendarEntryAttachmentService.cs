@@ -8,6 +8,7 @@ using OtripleS.Web.Api.Brokers.Loggings;
 using OtripleS.Web.Api.Brokers.Storage;
 using OtripleS.Web.Api.Models.CalendarEntryAttachments;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OtripleS.Web.Api.Services.CalendarEntryAttachments
@@ -28,6 +29,11 @@ namespace OtripleS.Web.Api.Services.CalendarEntryAttachments
             this.dateTimeBroker = dateTimeBroker;
         }
 
+        public IQueryable<CalendarEntryAttachment> RetrieveAllCalendarEntryAttachments()
+        {
+            throw new NotImplementedException();
+        }
+
         public ValueTask<CalendarEntryAttachment> RetrieveCalendarEntryAttachmentByIdAsync
             (Guid calendarEntryId, Guid attachmentId) =>
         TryCatch(async () =>
@@ -35,9 +41,14 @@ namespace OtripleS.Web.Api.Services.CalendarEntryAttachments
             ValidateCalendarEntryAttachmentIdIsNull(calendarEntryId, attachmentId);
 
             CalendarEntryAttachment storageCalendarEntryAttachment =
-                await this.storageBroker.SelectCalendarEntryAttachmentByIdAsync(calendarEntryId, attachmentId);
+                await this.storageBroker.SelectCalendarEntryAttachmentByIdAsync(
+                    calendarEntryId, 
+                    attachmentId);
 
-            ValidateStorageCalendarEntryAttachment(storageCalendarEntryAttachment, calendarEntryId, attachmentId);
+            ValidateStorageCalendarEntryAttachment(
+                storageCalendarEntryAttachment, 
+                calendarEntryId, 
+                attachmentId);
 
             return storageCalendarEntryAttachment;
         });
